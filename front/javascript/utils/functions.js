@@ -67,9 +67,9 @@ function integrateDataHtml() {
 // inject colors of product in HTML
 function displayColorsProduct() {
 	for (color in colorsProduct) {
-		selectColors.insertAdjacentHTML(
-			"beforeend",
-			`<option value="${colorsProduct[color]}">${colorsProduct[color]}</option>`
-		);
+		const optionColor = document.createElement("option");
+		selectColors.appendChild(optionColor);
+		optionColor.value = `${colorsProduct[color]}`;
+		optionColor.textContent = colorsProduct[color];
 	}
 }
