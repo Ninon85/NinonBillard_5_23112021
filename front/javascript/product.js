@@ -1,47 +1,43 @@
-// id of URL
-var id;
-//noeud pour insertion balise img
-const itemImg = document.querySelector("div.item__img");
-//noeud nom du produit
-let titleh1 = document.getElementById("title");
-//noeud prix
-let price = document.getElementById("price");
-//noeud description
-let description = document.getElementById("description");
-// noeud select color
-let selectColors = document.getElementById("colors");
-//input quantity
-let quantity = document.getElementById("quantity");
+// // id of URL
+// var id;
+// //noeud pour insertion balise img
+// const itemImg = document.querySelector("div.item__img");
+// //noeud nom du produit
+// const titleh1 = document.getElementById("title");
+// //noeud prix
+// const price = document.getElementById("price");
+// //noeud description
+// const description = document.getElementById("description");
+// // noeud select color
+// const selectColors = document.getElementById("colors");
+// //input quantity
+// const quantity = document.getElementById("quantity");
 
-//creation de la balise img
-let image = document.createElement("img");
-//ajout enfant à itemImg
+// //creation de la balise img
+// const image = document.createElement("img");
+// //ajout enfant à itemImg
+// itemImg.appendChild(image);
+// //balise title du head
+// const headTitle = document.querySelector("title");
+// //li panier
+// const liCart = document.querySelector(" nav > ul > a:nth-child(2) > li");
+// //array who contain each quantity of each product choiced
+// let quantityParsed = [];
+// //create a span in li  of panier to display total number of products
+// const totalProduct = document.createElement("span");
+// totalProduct.style.color = "#3498DB";
+// totalProduct.style.marginLeft = "2px";
+// //add child to li of panier
+// liCart.appendChild(totalProduct);
+// //number total of products
+// let sumQuantity;
 itemImg.appendChild(image);
-//balise title du head
-let headTitle = document.querySelector("title");
-//li panier
-let liCart = document.querySelector(" nav > ul > a:nth-child(2) > li");
-//array who contain each quantity of each product choiced
-let quantityParsed = [];
-//create a span in li  of panier to display total number of products
-const totalProduct = document.createElement("span");
-totalProduct.style.color = "#3498DB";
-//add child to li of panier
-liCart.appendChild(totalProduct);
-//number total of products
-let sumQuantity;
-totalProduct.textContent = `${JSON.parse(
-	localStorage.getItem("totalProduct")
-)} article(s)`;
 getId();
 integrateDataHtml();
-//function to push object un array and push to the localstorage
-const addToLocalStorage = (object) => {
-	productStorage.push(object);
-	localStorage.setItem("product", JSON.stringify(productStorage));
-};
-//get product in local storage
-let productStorage = JSON.parse(localStorage.getItem("product"));
+displayTotalProductCart(totalProduct);
+
+// //get product in local storage
+// let productStorage = JSON.parse(localStorage.getItem("product"));
 //listen events of the button to add to the cart
 addToCart.addEventListener("click", () => {
 	let recapChoice = {
@@ -106,8 +102,6 @@ addToCart.addEventListener("click", () => {
 	//push sumQuantity on localStorage
 	localStorage.setItem("totalProduct", JSON.stringify(sumQuantity));
 	//refresh display of total products in panier
-	totalProduct.textContent = `${JSON.parse(
-		localStorage.getItem("totalProduct")
-	)} article(s)`;
+	displayTotalProductCart();
 });
 // localStorage.clear();

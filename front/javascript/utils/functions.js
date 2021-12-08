@@ -73,3 +73,14 @@ function displayColorsProduct() {
 		optionColor.textContent = colorsProduct[color];
 	}
 }
+//function to display quantity of articles put in the shopping cart
+const displayTotalProductCart = () => {
+	totalProduct.textContent = `: ${JSON.parse(
+		localStorage.getItem("totalProduct")
+	)} article(s)`;
+};
+//function to push object in array and push to the localstorage
+const addToLocalStorage = (object) => {
+	productStorage.push(object);
+	localStorage.setItem("product", JSON.stringify(productStorage));
+};
