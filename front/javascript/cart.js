@@ -1,115 +1,210 @@
+// const inputsNumber = document.querySelectorAll('input[type="number"]');
+// console.log(inputsNumber);
 //get all inputs of form
 const inputs = document.querySelectorAll(
 	'input[type="text"],input[type="email"]'
 );
+// console.log(inputs);
 //get form for submit
 const form = document.querySelector(".cart__order__form");
 //variable for keep value of inputs
 let firstName, lastName, address, city, email;
 //get element cart__items
 const cart__items = document.getElementById("cart__items");
-console.log(cart__items);
-//keep products Api in array
-let productsApi;
-//index of productsApi where id is the same than in productStorage
+// console.log(cart__items);
+
+//index of productData where id is the same than in productStorage
 let indexFound;
+// // index of product storage has the same id and color than article
+// let indexStorage;
+// const redirect = () => {
+// 	if (productStorage.length == 0) {
+// 		alert(
+// 			"Votre panier est vide, vous allez être redirigé vers la page d'accueil"
+// 		);
+// 		location.href = "index.html";
+// 	}
+// };
+// redirect();
 //display quantity of product in li link "panier"
 displayTotalProductCart();
 //display total quantity in span
 const totalQuantity = (document.getElementById("totalQuantity").textContent =
 	JSON.parse(localStorage.getItem("totalProduct")));
+//get products of api and keep data in array "productData"
+getProducts();
+//display elements of localstorage
+//create elements html for each product in localstorage
+const displayProductStorage = () => {
+	for (product in productStorage) {
+		//find index of productData array who have the same id in productStorage
+		indexFound = productData.findIndex(
+			(i) => productStorage[product].idProduct === i._id
+		);
+		//create article
+		const article = document.createElement("article");
+		article.classList.add("cart__item");
+		article.dataset.id = productStorage[product].idProduct;
+		article.dataset.color = productStorage[product].color;
+		cart__items.appendChild(article);
+		//create div
+		const cart__item__img = document.createElement("div");
+		cart__item__img.classList.add("cart__item__img");
+		article.appendChild(cart__item__img);
+		//create img
+		const img = document.createElement("img");
+		cart__item__img.appendChild(img);
+		img.src = productData[indexFound].imageUrl;
+		img.alt = productData[indexFound].altTxt;
+		//create div
+		const cart__item__content = document.createElement("div");
+		cart__item__content.classList.add("cart__item__content");
+		article.appendChild(cart__item__content);
+		//create div
+		const cart__item__content__description = document.createElement("div");
+		cart__item__content__description.classList.add(
+			"cart__item__content__description"
+		);
+		cart__item__content.appendChild(cart__item__content__description);
+		//create h2
+		const titleproduct = document.createElement("h2");
+		cart__item__content__description.appendChild(titleproduct);
+		titleproduct.textContent = productData[indexFound].name;
+		//create p for color and p for price
+		const pColor = document.createElement("p");
+		pColor.textContent = productStorage[product].color;
+		const pPrice = document.createElement("p");
+		pPrice.textContent = `${productData[indexFound].price} \u20ac`;
+		cart__item__content__description.appendChild(pColor);
+		cart__item__content__description.appendChild(pPrice);
+		//create div
+		const cart__item__content__settings = document.createElement("div");
+		cart__item__content__settings.classList.add(
+			"cart__item__content__settings"
+		);
+		cart__item__content.appendChild(cart__item__content__settings);
+		//create div
+		const cart__item__content__settings__quantity =
+			document.createElement("div");
+		cart__item__content__settings__quantity.classList.add(
+			"cart__item__content__settings__quantity"
+		);
+		cart__item__content__settings.appendChild(
+			cart__item__content__settings__quantity
+		);
+		//create p quantity
+		pQuantity = document.createElement("p");
+		cart__item__content__settings__quantity.appendChild(pQuantity);
+		pQuantity.textContent = `Qté : ${productStorage[product].quantityNumber}`;
+		//create input number
+		const inputQuantity = document.createElement("input");
+		inputQuantity.classList.add("itemQuantity");
+		inputQuantity.type = "number";
+		inputQuantity.name = "itemQuantity";
+		inputQuantity.min = "1";
+		inputQuantity.max = "100";
+		inputQuantity.value = productStorage[product].quantityNumber;
+		// inputQuantity.addEventListener("change", (e) => {
+		// 	console.log(e.target.value);
+		// 	let indexStorage = productStorage.findIndex(
+		// 		(i) =>
+		// 			i.idProduct === article.dataset.id &&
+		// 			i.color === article.dataset.color
+		// 	);
+		// 	console.log(indexStorage);
+		// 	productStorage[indexStorage].quantityNumber = e.target.value;
+		// 	if (productStorage[indexStorage].quantityNumber > 100) {
+		// 		productStorage[indexStorage].quantityNumber = 100;
+		// 		inputQuantity.value = 100;
+		// 		alert("Vous ne pouvez pas commander plus de 100 articles");
+		// 	} else {
+		// 		localStorage.setItem("product", JSON.stringify(productStorage));
+		// 		pQuantity.textContent = `Qté : ${productStorage[indexStorage].quantityNumber}`;
+		// 		// quantityParsed.push(parseInt(product.quantityNumber));
+		// 	}
+		// });
 
-fetch("http://localhost:3000/api/products")
-	.then((res) => res.json())
-	// .then((data) => console.log(data))
-	.then((data) => (productsApi = data))
-	.then((data) => console.log(productsApi))
-	.then((data) => {
-		//create elements html for each product in localstorage
-		for (product in productStorage) {
-			//find index of productsApi array who have the same id in productStorage
-			indexFound = productsApi.findIndex(
-				(i) => productStorage[product].idProduct === i._id
-			);
-			//create article
-			const article = document.createElement("article");
-			article.classList.add("cart__item");
-			article.dataset.id = productStorage[product].idProduct;
-			article.dataset.color = productStorage[product].color;
-			cart__items.appendChild(article);
-			//create div
-			const cart__item__img = document.createElement("div");
-			cart__item__img.classList.add("cart__item__img");
-			article.appendChild(cart__item__img);
-			//create img
-			const img = document.createElement("img");
-			cart__item__img.appendChild(img);
-			img.src = productsApi[indexFound].imageUrl;
-			img.alt = productsApi[indexFound].altTxt;
-			//create div
-			const cart__item__content = document.createElement("div");
-			cart__item__content.classList.add("cart__item__content");
-			article.appendChild(cart__item__content);
-			//create div
-			const cart__item__content__description = document.createElement("div");
-			cart__item__content__description.classList.add(
-				"cart__item__content__description"
-			);
-			cart__item__content.appendChild(cart__item__content__description);
-			//create h2
-			const titleproduct = document.createElement("h2");
-			cart__item__content__description.appendChild(titleproduct);
-			titleproduct.textContent = productsApi[indexFound].name;
-			//create p for color and p for price
-			const pColor = document.createElement("p");
-			pColor.textContent = productStorage[product].color;
-			const pPrice = document.createElement("p");
-			pPrice.textContent = `${productsApi[indexFound].price} \u20ac`;
-			cart__item__content__description.appendChild(pColor);
-			cart__item__content__description.appendChild(pPrice);
-			//create div
-			const cart__item__content__settings = document.createElement("div");
-			cart__item__content__settings.classList.add(
-				"cart__item__content__settings"
-			);
-			cart__item__content.appendChild(cart__item__content__settings);
-			//create div
-			const cart__item__content__settings__quantity =
-				document.createElement("div");
-			cart__item__content__settings__quantity.classList.add(
-				"cart__item__content__settings__quantity"
-			);
-			cart__item__content__settings.appendChild(
-				cart__item__content__settings__quantity
-			);
-			//create p quantity
-			const pQuantity = document.createElement("p");
-			cart__item__content__settings__quantity.appendChild(pQuantity);
-			pQuantity.textContent = `Qté : ${productStorage[product].quantityNumber}`;
-			//create input number
-			const inputQuantity = document.createElement("input");
-			inputQuantity.classList.add("itemQuantity");
-			inputQuantity.type = "number";
-			inputQuantity.name = "itemQuantity";
-			inputQuantity.min = "1";
-			inputQuantity.max = "100";
-			inputQuantity.value = "42";
+		cart__item__content__settings__quantity.appendChild(inputQuantity);
+		//create div
+		const cart__item__content__settings__delete = document.createElement("div");
+		cart__item__content__settings__delete.classList.add(
+			"cart__item__content__settings__delete"
+		);
+		cart__item__content__settings.appendChild(
+			cart__item__content__settings__delete
+		);
+		//create p delete
+		const pDeleteItem = document.createElement("p");
+		pDeleteItem.textContent = "Supprimer";
+		cart__item__content__settings__delete.appendChild(pDeleteItem);
+		// console.log(inputQuantity);
+		// pDeleteItem.addEventListener("click", () => {
+		// 	console.log("c'est cliqué!");
+		// 	let indexStorageDelete = productStorage.findIndex(
+		// 		(i) =>
+		// 			i.idProduct === article.dataset.id &&
+		// 			i.color === article.dataset.color
+		// 	);
+		// 	console.log(indexStorageDelete);
+		// 	if (indexStorageDelete != -1) {
+		// 		productStorage.splice(indexStorageDelete, 1);
+		// 		localStorage.setItem("product", JSON.stringify(productStorage));
+		// 		displayTotalProductCart();
+		// 	} else if (productStorage === []) {
+		// 		sumQuantity = 0;
+		// 		// localStorage.setItem("totalProduct", JSON.stringify(sumQuantity));
+		// 		displayTotalProductCart();
+		// 	}
 
-			cart__item__content__settings__quantity.appendChild(inputQuantity);
-			//create div
-			const cart__item__content__settings__delete =
-				document.createElement("div");
-			cart__item__content__settings__delete.classList.add(
-				"cart__item__content__settings__delete"
+		// 	productStorage[indexStorage].quantityNumber = e.target.value;
+		// 	if (productStorage[indexStorage].quantityNumber > 100) {
+		// 		productStorage[indexStorage].quantityNumber = 100;
+		// 		inputQuantity.value = 100;
+		// 		alert("Vous ne pouvez pas commander plus de 100 articles");
+		// 	} else {
+		// 		localStorage.setItem("product", JSON.stringify(productStorage));
+		// 		pQuantity.textContent = `Qté : ${productStorage[indexStorage].quantityNumber}`;
+		// 	}
+		// });
+	}
+};
+setTimeout(() => {
+	displayProductStorage();
+}, 500);
+
+const inputQuantity = document.querySelectorAll('input[type="number"]');
+// console.log(inputQuantity);
+const article = document.querySelectorAll("article");
+// console.log(article);
+let indexStorage;
+inputQuantity.forEach((input) => {
+	input.addEventListener("change", (e) => {
+		console.log(e.target.value);
+
+		for (element in article) {
+			indexStorage = productStorage.findIndex(
+				(i) =>
+					i.idProduct === article[element].dataset.id &&
+					i.color === article[element].dataset.color
 			);
-			cart__item__content__settings.appendChild(
-				cart__item__content__settings__delete
-			);
-			//create p delete
-			const pDeleteItem = document.createElement("p");
-			cart__item__content__settings__delete.appendChild(pDeleteItem);
+			// console.log(article[element].dataset.id);
 		}
+		console.log(indexStorage);
+
+		// console.log(indexStorage);
+		// productStorage[indexStorage].quantityNumber = e.target.value;
+		// if (productStorage[indexStorage].quantityNumber > 100) {
+		// 	productStorage[indexStorage].quantityNumber = 100;
+		// 	inputQuantity.value = 100;
+		// 	alert("Vous ne pouvez pas commander plus de 100 articles");
+		// } else {
+		// 	localStorage.setItem("product", JSON.stringify(productStorage));
+		// 	pQuantity.textContent = `Qté : ${productStorage[indexStorage].quantityNumber}`;
+		// 	// quantityParsed.push(parseInt(product.quantityNumber));
+		// }
 	});
+});
+
 //-----------------------------------------------------
 //Form
 //-----------------------------------------------------
@@ -260,3 +355,4 @@ form.addEventListener("submit", (e) => {
 		alert("Veuillez remplir les champs");
 	}
 });
+// localStorage.clear();

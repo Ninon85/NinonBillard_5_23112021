@@ -26,7 +26,7 @@ const selectColors = document.getElementById("colors");
 const quantity = document.getElementById("quantity");
 //creation de la balise img
 const image = document.createElement("img");
-//ajout enfant à itemImg
+//ajout enfant à itemImg---------------------------------------------------
 // itemImg.appendChild(image);
 //balise title du head
 const headTitle = document.querySelector("title");
@@ -41,7 +41,7 @@ totalProduct.style.marginLeft = "2px";
 //add child to li of panier
 liCart.appendChild(totalProduct);
 //number total of products
-let sumQuantity;
+let sumQuantity = JSON.parse(localStorage.getItem("totalProduct"));
 //get product in local storage
 let productStorage = JSON.parse(localStorage.getItem("product"));
 //------------------------------------------------------------------

@@ -16,7 +16,7 @@
 // //creation de la balise img
 // const image = document.createElement("img");
 // //ajout enfant à itemImg
-// itemImg.appendChild(image);
+itemImg.appendChild(image);
 // //balise title du head
 // const headTitle = document.querySelector("title");
 // //li panier
@@ -31,13 +31,13 @@
 // liCart.appendChild(totalProduct);
 // //number total of products
 // let sumQuantity;
-itemImg.appendChild(image);
+// itemImg.appendChild(image);
+// // //get product in local storage
+// let productStorage = JSON.parse(localStorage.getItem("product"));
 getId();
 integrateDataHtml();
-displayTotalProductCart(totalProduct);
+displayTotalProductCart();
 
-// //get product in local storage
-// let productStorage = JSON.parse(localStorage.getItem("product"));
 //listen events of the button to add to the cart
 addToCart.addEventListener("click", () => {
 	let recapChoice = {
@@ -45,11 +45,12 @@ addToCart.addEventListener("click", () => {
 		color: selectColors.value,
 		quantityNumber: quantity.value,
 	};
+
 	// console.log(recapChoice.quantityNumber);
 	// console.log(typeof recapChoice.quantityNumber);
 	// console.log(recapChoice.color);
 	// console.log(quantity.value);
-
+	// displayTotalProductCart();
 	if (selectColors.value === "") {
 		alert("Veuillez selectionner une couleur");
 	} else if (recapChoice.quantityNumber === "0") {
@@ -86,22 +87,29 @@ addToCart.addEventListener("click", () => {
 	} else if (productStorage === null) {
 		productStorage = [];
 		addToLocalStorage(recapChoice);
+		// sumQuantity = recapChoice.quantityNumber;
+		// localStorage.setItem("totalProduct", JSON.stringify(sumQuantity));
 	}
 	//convert in number each quantity of product and push in array
-	productStorage.forEach((product) => {
-		// console.log(product.quantityNumber);
+	// productStorage.forEach((product) => {
+	// 	console.log(product.quantityNumber);
 
-		quantityParsed.push(parseInt(product.quantityNumber));
-		// console.log(quantityParsed);
-	});
-	//make the sum of number of products
-	sumQuantity = quantityParsed.reduce((x, y) => x + y);
+	// 	quantityParsed.push(parseInt(product.quantityNumber));
+	// 	console.log(quantityParsed);
+	// });
+	// // make the sum of number of products
+	// sumQuantity = quantityParsed.reduce((x, y) => x + y);
 	// console.log(sumQuantity);
 	// console.log(typeof sumQuantity);
 	// console.log(quantityParsed);
-	//push sumQuantity on localStorage
-	localStorage.setItem("totalProduct", JSON.stringify(sumQuantity));
+
+	// //push sumQuantity on localStorage
+	// localStorage.setItem("totalProduct", JSON.stringify(sumQuantity));
 	//refresh display of total products in panier
+	// displayTotalProductCart();
+	sumQuantity += parseInt(recapChoice.quantityNumber);
+	console.log(sumQuantity);
+	localStorage.setItem("totalProduct", JSON.stringify(sumQuantity));
 	displayTotalProductCart();
 });
 // localStorage.clear();
