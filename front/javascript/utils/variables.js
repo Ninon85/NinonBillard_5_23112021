@@ -47,3 +47,9 @@ let productStorage = JSON.parse(localStorage.getItem("product"));
 //------------------------------------------------------------------
 //cart.js
 //------------------------------------------------------------------
+//array for price per product
+let dataPrice = [];
+//total Price
+let totalPrice;
+//keep element of Dom where total price is display
+const totalPriceEl = document.getElementById("totalPrice");

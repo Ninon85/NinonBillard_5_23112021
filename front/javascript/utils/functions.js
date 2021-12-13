@@ -73,11 +73,15 @@ function displayColorsProduct() {
 		optionColor.textContent = colorsProduct[color];
 	}
 }
-//function to display quantity of articles put in the shopping cart
+//function to display total quantity of articles of the shopping cart
 function displayTotalProductCart() {
 	totalProduct.textContent = `: ${JSON.parse(
 		localStorage.getItem("totalProduct")
 	)} article(s)`;
+	if (productStorage === null) {
+		sumQuantity = 0;
+		localStorage.setItem("totalProduct", JSON.stringify(sumQuantity));
+	}
 }
 //function to push object in array and push to the localstorage
 const addToLocalStorage = (object) => {
@@ -85,142 +89,297 @@ const addToLocalStorage = (object) => {
 	localStorage.setItem("product", JSON.stringify(productStorage));
 };
 
-//-------------------------------------
+//----------------------------------------------------------------------------------
 //cart.js
-//-------------------------------------
+//----------------------------------------------------------------------------------
 
+//---------------------------------------------
+// function redirection to index html if Cart shopping is empty
+//---------------------------------------------
+
+const redirect = () => {
+	if (sumQuantity === 0) {
+		alert(
+			"Votre panier est vide, vous allez être redirigé vers la page d'accueil"
+		);
+		location.href = "index.html";
+	}
+};
+//---------------------------------------------
 //display elements of localstorage
 //create elements html for each product in localstorage
-// const displayCart = () => {
-// 	for (product in productStorage) {
-// 		//find index of productsApi array who have the same id in productStorage
-// 		indexFound = productsApi.findIndex(
-// 			(i) => productStorage[product].idProduct === i._id
-// 		);
-// 		//create article
-// 		const article = document.createElement("article");
-// 		article.classList.add("cart__item");
-// 		article.dataset.id = productStorage[product].idProduct;
-// 		article.dataset.color = productStorage[product].color;
-// 		cart__items.appendChild(article);
-// 		//create div
-// 		const cart__item__img = document.createElement("div");
-// 		cart__item__img.classList.add("cart__item__img");
-// 		article.appendChild(cart__item__img);
-// 		//create img
-// 		const img = document.createElement("img");
-// 		cart__item__img.appendChild(img);
-// 		img.src = productsApi[indexFound].imageUrl;
-// 		img.alt = productsApi[indexFound].altTxt;
-// 		//create div
-// 		const cart__item__content = document.createElement("div");
-// 		cart__item__content.classList.add("cart__item__content");
-// 		article.appendChild(cart__item__content);
-// 		//create div
-// 		const cart__item__content__description = document.createElement("div");
-// 		cart__item__content__description.classList.add(
-// 			"cart__item__content__description"
-// 		);
-// 		cart__item__content.appendChild(cart__item__content__description);
-// 		//create h2
-// 		const titleproduct = document.createElement("h2");
-// 		cart__item__content__description.appendChild(titleproduct);
-// 		titleproduct.textContent = productsApi[indexFound].name;
-// 		//create p for color and p for price
-// 		const pColor = document.createElement("p");
-// 		pColor.textContent = productStorage[product].color;
-// 		const pPrice = document.createElement("p");
-// 		pPrice.textContent = `${productsApi[indexFound].price} \u20ac`;
-// 		cart__item__content__description.appendChild(pColor);
-// 		cart__item__content__description.appendChild(pPrice);
-// 		//create div
-// 		const cart__item__content__settings = document.createElement("div");
-// 		cart__item__content__settings.classList.add(
-// 			"cart__item__content__settings"
-// 		);
-// 		cart__item__content.appendChild(cart__item__content__settings);
-// 		//create div
-// 		const cart__item__content__settings__quantity =
-// 			document.createElement("div");
-// 		cart__item__content__settings__quantity.classList.add(
-// 			"cart__item__content__settings__quantity"
-// 		);
-// 		cart__item__content__settings.appendChild(
-// 			cart__item__content__settings__quantity
-// 		);
-// 		//create p quantity
-// 		const pQuantity = document.createElement("p");
-// 		cart__item__content__settings__quantity.appendChild(pQuantity);
-// 		pQuantity.textContent = `Qté : ${productStorage[product].quantityNumber}`;
-// 		//create input number
-// 		const inputQuantity = document.createElement("input");
-// 		inputQuantity.classList.add("itemQuantity");
-// 		inputQuantity.type = "number";
-// 		inputQuantity.name = "itemQuantity";
-// 		inputQuantity.min = "1";
-// 		inputQuantity.max = "100";
-// 		inputQuantity.value = productStorage[product].quantityNumber;
-// 		inputQuantity.addEventListener("change", (e) => {
-// 			console.log(e.target.value);
-// 			let indexStorage = productStorage.findIndex(
-// 				(i) =>
-// 					i.idProduct === article.dataset.id &&
-// 					i.color === article.dataset.color
-// 			);
-// 			console.log(indexStorage);
-// 			productStorage[indexStorage].quantityNumber = e.target.value;
-// 			if (productStorage[indexStorage].quantityNumber > 100) {
-// 				productStorage[indexStorage].quantityNumber = 100;
-// 				inputQuantity.value = 100;
-// 				alert("Vous ne pouvez pas commander plus de 100 articles");
-// 			} else {
-// 				localStorage.setItem("product", JSON.stringify(productStorage));
-// 				pQuantity.textContent = `Qté : ${productStorage[indexStorage].quantityNumber}`;
-// 				// quantityParsed.push(parseInt(product.quantityNumber));
-// 			}
-// 		});
+//---------------------------------------------
 
-// 		cart__item__content__settings__quantity.appendChild(inputQuantity);
-// 		//create div
-// 		const cart__item__content__settings__delete = document.createElement("div");
-// 		cart__item__content__settings__delete.classList.add(
-// 			"cart__item__content__settings__delete"
-// 		);
-// 		cart__item__content__settings.appendChild(
-// 			cart__item__content__settings__delete
-// 		);
-// 		//create p delete
-// 		const pDeleteItem = document.createElement("p");
-// 		pDeleteItem.textContent = "Supprimer";
-// 		cart__item__content__settings__delete.appendChild(pDeleteItem);
-// 		// console.log(inputQuantity);
-// 		pDeleteItem.addEventListener("click", () => {
-// 			console.log("c'est cliqué!");
-// 			let indexStorageDelete = productStorage.findIndex(
-// 				(i) =>
-// 					i.idProduct === article.dataset.id &&
-// 					i.color === article.dataset.color
-// 			);
-// 			console.log(indexStorageDelete);
-// 			if (indexStorageDelete != -1) {
-// 				productStorage.splice(indexStorageDelete, 1);
-// 				localStorage.setItem("product", JSON.stringify(productStorage));
-// 				displayTotalProductCart();
-// 			} else if (productStorage === []) {
-// 				sumQuantity = 0;
-// 				// localStorage.setItem("totalProduct", JSON.stringify(sumQuantity));
-// 				displayTotalProductCart();
-// 			}
+const displayProductStorage = () => {
+	for (product in productStorage) {
+		//keep quantity of each product in localstorage for make the sum of total quantity
+		quantityParsed.push(parseInt(productStorage[product].quantityNumber));
+		console.log(quantityParsed);
+		//find index of productData array who have the same id in productStorage
+		indexFound = productData.findIndex(
+			(i) => productStorage[product].idProduct === i._id
+		);
 
-// 			productStorage[indexStorage].quantityNumber = e.target.value;
-// 			if (productStorage[indexStorage].quantityNumber > 100) {
-// 				productStorage[indexStorage].quantityNumber = 100;
-// 				inputQuantity.value = 100;
-// 				alert("Vous ne pouvez pas commander plus de 100 articles");
-// 			} else {
-// 				localStorage.setItem("product", JSON.stringify(productStorage));
-// 				pQuantity.textContent = `Qté : ${productStorage[indexStorage].quantityNumber}`;
-// 			}
-// 		});
-// 	}
-// };
+		//create article
+		const article = document.createElement("article");
+		cart__items.appendChild(article);
+		article.classList.add("cart__item");
+		article.dataset.id = productStorage[product].idProduct;
+		article.dataset.color = productStorage[product].color;
+		//create div
+		const cart__item__img = document.createElement("div");
+		cart__item__img.classList.add("cart__item__img");
+		article.appendChild(cart__item__img);
+		//create img
+		const img = document.createElement("img");
+		cart__item__img.appendChild(img);
+		img.src = productData[indexFound].imageUrl;
+		img.alt = productData[indexFound].altTxt;
+		//create div
+		const cart__item__content = document.createElement("div");
+		cart__item__content.classList.add("cart__item__content");
+		article.appendChild(cart__item__content);
+		//create div
+		const cart__item__content__description = document.createElement("div");
+		cart__item__content__description.classList.add(
+			"cart__item__content__description"
+		);
+		cart__item__content.appendChild(cart__item__content__description);
+		//create h2
+		const titleproduct = document.createElement("h2");
+		cart__item__content__description.appendChild(titleproduct);
+		titleproduct.textContent = productData[indexFound].name;
+		//create p for color and p for price
+		const pColor = document.createElement("p");
+		pColor.textContent = productStorage[product].color;
+		const pPrice = document.createElement("p");
+		pPrice.textContent = `${productData[indexFound].price} \u20ac`;
+		cart__item__content__description.appendChild(pColor);
+		cart__item__content__description.appendChild(pPrice);
+		//array content unit price per product
+		dataPrice.push(parseInt(productData[indexFound].price));
+		console.log(dataPrice);
+		//create div
+		const cart__item__content__settings = document.createElement("div");
+		cart__item__content__settings.classList.add(
+			"cart__item__content__settings"
+		);
+		cart__item__content.appendChild(cart__item__content__settings);
+		//create div
+		const cart__item__content__settings__quantity =
+			document.createElement("div");
+		cart__item__content__settings__quantity.classList.add(
+			"cart__item__content__settings__quantity"
+		);
+		cart__item__content__settings.appendChild(
+			cart__item__content__settings__quantity
+		);
+		//create p quantity
+		pQuantity = document.createElement("p");
+		cart__item__content__settings__quantity.appendChild(pQuantity);
+		pQuantity.textContent = `Qté : ${productStorage[product].quantityNumber}`;
+		//create input number
+		const inputQuantity = document.createElement("input");
+		inputQuantity.classList.add("itemQuantity");
+		inputQuantity.type = "number";
+		inputQuantity.name = "itemQuantity";
+		inputQuantity.min = "1";
+		inputQuantity.max = "100";
+		inputQuantity.value = productStorage[product].quantityNumber;
+		cart__item__content__settings__quantity.appendChild(inputQuantity);
+		//create div
+		const cart__item__content__settings__delete = document.createElement("div");
+		cart__item__content__settings__delete.classList.add(
+			"cart__item__content__settings__delete"
+		);
+		cart__item__content__settings.appendChild(
+			cart__item__content__settings__delete
+		);
+		//create p delete
+		const pDeleteItem = document.createElement("p");
+		pDeleteItem.textContent = "Supprimer";
+		cart__item__content__settings__delete.appendChild(pDeleteItem);
+	}
+};
+//---------------------------------------------
+//function to make total price calculation
+//---------------------------------------------
+
+const totalPriceCalculation = () => {
+	sumPerProduct = [];
+	for (let i = 0; i < dataPrice.length; i++) {
+		//price*quantity
+		sumPricePerProduct = dataPrice[i] * productStorage[i].quantityNumber;
+		//push in array
+		sumPerProduct.push(sumPricePerProduct);
+
+		// console.log(sumPerProduct);
+	}
+	console.log(sumPerProduct);
+	//make sum of price
+	totalPrice = sumPerProduct.reduce((x, y) => x + y);
+	// console.log(totalPrice);
+	//display total price
+	totalPriceEl.textContent = totalPrice;
+};
+//---------------------------------------------
+//function to make the sum of quantity product
+//---------------------------------------------
+
+const makeSumQuantity = (quantityParsed) => {
+	sumQuantity = quantityParsed.reduce((x, y) => x + y);
+	console.log(sumQuantity);
+	localStorage.setItem("totalProduct", JSON.stringify(sumQuantity));
+};
+
+//---------------------------------------------
+//function for modify quantity in localstorage
+//---------------------------------------------
+
+const modifyQuantity = () => {
+	const inputQuantity = document.querySelectorAll(".itemQuantity");
+	const articles = document.querySelectorAll("article");
+	const pQuantity = document.querySelectorAll(
+		"div.cart__item__content__settings__quantity > p"
+	);
+	// console.log(Array.from(articles));
+	// console.log(articles);
+	// console.log(inputQuantity);
+	// console.log(pQuantity);
+
+	for (let i = 0; i < inputQuantity.length; i++) {
+		inputQuantity[i].addEventListener("change", (e) => {
+			// console.log(e.target.value);
+
+			let articlesDatasetId = articles[i].dataset.id;
+			let articlesDatasetColor = articles[i].dataset.color;
+			let pQuantityTextContent = pQuantity[i].textContent;
+			// console.log(articlesDatasetColor);
+			// console.log(articlesDatasetId);
+			// console.log(pQuantityTextContent);
+			//---------------------------------------------------------------------------
+			//find index where id and color are the same for article and in producStorage
+			//---------------------------------------------------------------------------
+
+			indexStorage = productStorage.findIndex(
+				(i) =>
+					i.idProduct == articlesDatasetId && i.color == articlesDatasetColor
+			);
+			//--------------------------------------------------------------------------
+			//give value of the input at index found in productStorage
+			//--------------------------------------------------------------------------
+
+			productStorage[indexStorage].quantityNumber = e.target.value;
+			//--------------------------------------------------------------------------
+			//modify at index find the quanttity in quantityParsed
+			//--------------------------------------------------------------------------
+
+			quantityParsed.splice(
+				indexStorage,
+				1,
+				parseInt(productStorage[indexStorage].quantityNumber)
+			);
+			console.log(quantityParsed);
+			//--------------------------------------------------------------------------
+			//refresh total quantity of products
+			//--------------------------------------------------------------------------
+			makeSumQuantity(quantityParsed);
+			//--------------------------------------------------------------------------
+			//refresh display of pQuantity textContent
+			//--------------------------------------------------------------------------
+			pQuantity[
+				indexStorage
+			].textContent = `Qté : ${productStorage[indexStorage].quantityNumber}`;
+			//--------------------------------------------------------------------------
+			//refresh display total quantity in span
+			//--------------------------------------------------------------------------
+
+			const totalQuantity = (document.getElementById(
+				"totalQuantity"
+			).textContent = JSON.parse(localStorage.getItem("totalProduct")));
+			//--------------------------------------------------------------------------
+			//refresh display total quantity in link li panier
+			//--------------------------------------------------------------------------
+			displayTotalProductCart();
+			//--------------------------------------------------------------------------
+			//refresh total price
+			//--------------------------------------------------------------------------
+
+			totalPriceCalculation();
+			//--------------------------------------------------------------------------
+			// if quantity in productStorage at index found is > 100
+			//--------------------------------------------------------------------------
+
+			if (productStorage[indexStorage].quantityNumber > 100) {
+				productStorage[indexStorage].quantityNumber = 100;
+				localStorage.setItem("product", JSON.stringify(productStorage));
+				alert("Vous ne pouvez pas commander plus de 100 articles");
+				inputQuantity[indexStorage].value = 100;
+				//--------------------------------------------------------------------------
+				//refresh display of pQuantity textContent
+				//--------------------------------------------------------------------------
+				pQuantity[
+					indexStorage
+				].textContent = `Qté : ${productStorage[indexStorage].quantityNumber}`;
+				quantityParsed.splice(indexStorage, 1, 100);
+				//--------------------------------------------------------------------------
+				//refresh total quantity
+				//--------------------------------------------------------------------------
+				makeSumQuantity(quantityParsed);
+			} else {
+				//--------------------------------------------------------------------------
+				// push productStorage refreshed in localStorage
+				//--------------------------------------------------------------------------
+
+				localStorage.setItem("product", JSON.stringify(productStorage));
+			}
+		});
+	}
+};
+//---------------------------------------------
+//function for delete a product in localstorage
+//---------------------------------------------
+const deleteProduct = () => {
+	const pDeleteItem = document.querySelectorAll(
+		"div.cart__item__content__settings__delete > p"
+	);
+	const articles = document.querySelectorAll("article");
+	// console.log(pDeleteItem);
+	// console.log(articles);
+	for (let i = 0; i < pDeleteItem.length; i++) {
+		pDeleteItem[i].addEventListener("click", () => {
+			console.log("c'est cliqué !!");
+			let articlesDatasetId = articles[i].dataset.id;
+			let articlesDatasetColor = articles[i].dataset.color;
+			indexToDeleteStorage = productStorage.findIndex(
+				(i) =>
+					i.idProduct == articlesDatasetId && i.color == articlesDatasetColor
+			);
+
+			// console.log(indexToDeleteStorage);
+			location.reload();
+			if (productStorage.length === 1) {
+				// console.log("productStorage vide !");
+				sumQuantity = 0;
+				localStorage.setItem("totalProduct", JSON.stringify(sumQuantity));
+				displayTotalProductCart();
+				localStorage.removeItem("product");
+			} else {
+				productStorage.splice(indexToDeleteStorage, 1);
+				localStorage.setItem("product", JSON.stringify(productStorage));
+				//--------------------------------------------------------------------------
+				//refresh display total quantity in link li panier
+				//--------------------------------------------------------------------------
+				displayTotalProductCart();
+				//--------------------------------------------------------------------------
+				//delete at index found the quantity in quantityParsed
+				//--------------------------------------------------------------------------
+				quantityParsed.splice(indexToDeleteStorage, 1);
+				//--------------------------------------------------------------------------
+				//refresh sum of quantity products
+				//--------------------------------------------------------------------------
+				makeSumQuantity(quantityParsed);
+			}
+		});
+	}
+};
