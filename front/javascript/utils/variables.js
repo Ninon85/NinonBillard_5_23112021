@@ -4,9 +4,31 @@
 //récupération du noeud item pour implémentation des produits sur la page d'accueil
 const item = document.getElementById("items");
 // console.log(item);
-
+//create a span in li  of panier to display total number of products
+const totalProduct = document.createElement("span");
+totalProduct.style.color = "#3498DB";
+totalProduct.style.marginLeft = "2px";
+//get product in local storage
+let productStorage = JSON.parse(localStorage.getItem("product"));
 //stockage des données products de l'api
 let productData = [];
+//--------------------------------------------
+//product.js
+//--------------------------------------------
+//number total of products
+let sumQuantity = JSON.parse(localStorage.getItem("totalProduct"));
+//array who contain each quantity of each product choiced
+let quantityParsed = [];
+//------------------------------------------------------------------
+//cart.js
+//------------------------------------------------------------------
+//array for price per product
+let dataPrice = [];
+//total Price
+let totalPrice;
+//keep element of Dom where total price is display
+const totalPriceEl = document.getElementById("totalPrice");
+
 //--------------------------------------------
 //product.js
 //--------------------------------------------
@@ -32,24 +54,5 @@ const image = document.createElement("img");
 const headTitle = document.querySelector("title");
 //li panier
 const liCart = document.querySelector(" nav > ul > a:nth-child(2) > li");
-//array who contain each quantity of each product choiced
-let quantityParsed = [];
-//create a span in li  of panier to display total number of products
-const totalProduct = document.createElement("span");
-totalProduct.style.color = "#3498DB";
-totalProduct.style.marginLeft = "2px";
 //add child to li of panier
 liCart.appendChild(totalProduct);
-//number total of products
-let sumQuantity = JSON.parse(localStorage.getItem("totalProduct"));
-//get product in local storage
-let productStorage = JSON.parse(localStorage.getItem("product"));
-//------------------------------------------------------------------
-//cart.js
-//------------------------------------------------------------------
-//array for price per product
-let dataPrice = [];
-//total Price
-let totalPrice;
-//keep element of Dom where total price is display
-const totalPriceEl = document.getElementById("totalPrice");

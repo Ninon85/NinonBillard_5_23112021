@@ -13,7 +13,7 @@ const getProducts = () => {
 	// console.log(productData);
 };
 
-//fonction pour intégration des balises de la page d'accueil
+//Display elements
 const integrateElements = () => {
 	for (const product of productData) {
 		const link = document.createElement("a");
@@ -62,7 +62,8 @@ function integrateDataHtml() {
 			description.textContent = `${data.description}`;
 			colorsProduct = data.colors;
 			displayColorsProduct();
-		});
+		})
+		.catch((err) => console.log(err));
 }
 // inject colors of product in HTML
 function displayColorsProduct() {
@@ -114,7 +115,7 @@ const displayProductStorage = () => {
 	for (product in productStorage) {
 		//keep quantity of each product in localstorage for make the sum of total quantity
 		quantityParsed.push(parseInt(productStorage[product].quantityNumber));
-		console.log(quantityParsed);
+		// console.log(quantityParsed);
 		//find index of productData array who have the same id in productStorage
 		indexFound = productData.findIndex(
 			(i) => productStorage[product].idProduct === i._id
@@ -158,7 +159,7 @@ const displayProductStorage = () => {
 		cart__item__content__description.appendChild(pPrice);
 		//array content unit price per product
 		dataPrice.push(parseInt(productData[indexFound].price));
-		console.log(dataPrice);
+		// console.log(dataPrice);
 		//create div
 		const cart__item__content__settings = document.createElement("div");
 		cart__item__content__settings.classList.add(
@@ -206,21 +207,26 @@ const displayProductStorage = () => {
 //---------------------------------------------
 
 const totalPriceCalculation = () => {
-	sumPerProduct = [];
-	for (let i = 0; i < dataPrice.length; i++) {
-		//price*quantity
-		sumPricePerProduct = dataPrice[i] * productStorage[i].quantityNumber;
-		//push in array
-		sumPerProduct.push(sumPricePerProduct);
+	// sumPerProduct = [];
+	if (dataPrice !== null) {
+		sumPerProduct = [];
+		for (let i = 0; i < dataPrice.length; i++) {
+			//price*quantity
+			sumPricePerProduct = dataPrice[i] * productStorage[i].quantityNumber;
+			//push in array
+			sumPerProduct.push(sumPricePerProduct);
 
+			// console.log(sumPerProduct);
+		}
 		// console.log(sumPerProduct);
+		//make sum of price
+		totalPrice = sumPerProduct.reduce((x, y) => x + y);
+		// console.log(totalPrice);
+		//display total price
+		totalPriceEl.textContent = totalPrice;
+	} else {
+		totalPriceEl.textContent = "0";
 	}
-	console.log(sumPerProduct);
-	//make sum of price
-	totalPrice = sumPerProduct.reduce((x, y) => x + y);
-	// console.log(totalPrice);
-	//display total price
-	totalPriceEl.textContent = totalPrice;
 };
 //---------------------------------------------
 //function to make the sum of quantity product
@@ -228,7 +234,7 @@ const totalPriceCalculation = () => {
 
 const makeSumQuantity = (quantityParsed) => {
 	sumQuantity = quantityParsed.reduce((x, y) => x + y);
-	console.log(sumQuantity);
+	// console.log(sumQuantity);
 	localStorage.setItem("totalProduct", JSON.stringify(sumQuantity));
 };
 
@@ -279,7 +285,7 @@ const modifyQuantity = () => {
 				1,
 				parseInt(productStorage[indexStorage].quantityNumber)
 			);
-			console.log(quantityParsed);
+			// console.log(quantityParsed);
 			//--------------------------------------------------------------------------
 			//refresh total quantity of products
 			//--------------------------------------------------------------------------
@@ -382,4 +388,147 @@ const deleteProduct = () => {
 			}
 		});
 	}
+};
+//-----------------------------------------------------
+//Form
+//-----------------------------------------------------
+
+//Function for display an error message
+const errorDisplay = (tag, message, valid) => {
+	const p = document.getElementById(`${tag}ErrorMsg`);
+	if (!valid) {
+		p.textContent = message;
+	} else {
+		p.textContent = message;
+	}
+};
+//function check value for first name
+const firstNameChecker = (value) => {
+	// match(/^[a-z]{3,20}$/i
+	if (value.length < 2 || value.length > 20) {
+		errorDisplay(
+			"firstName",
+			"Votre prénom doit être compris entre 2 et 20 caractères."
+		);
+		firstName = null;
+	} else if (value.match(/^[a-zéûùîîëêè-]*$/i)) {
+		errorDisplay("firstName", "", true);
+		firstName = value;
+	} else {
+		errorDisplay(
+			"firstName",
+			"Votre prénom ne doit contenir ni chiffres ni caractères spéciaux."
+		);
+		firstName = null;
+	}
+};
+//check value for last name
+//play display error
+//keep value in variable
+//if error => prevent submit of form => variable = null
+const lastNameChecker = (value) => {
+	if (value.length < 3 || value.length > 20) {
+		errorDisplay(
+			"lastName",
+			"Votre prénom doit être compris entre 3 et 20 caractères."
+		);
+		lastName = null;
+	} else if (value.match(/^[a-zéûùîîëêèç-]*$/i)) {
+		errorDisplay("lastName", "", true);
+		lastName = value;
+	} else {
+		errorDisplay(
+			"lastName",
+			"Votre prénom ne doit contenir ni chiffres ni caractères spéciaux."
+		);
+		lastName = null;
+	}
+};
+//check value address
+//play display error
+//keep value in variable
+//if error => prevent submit of form => variable = null
+const addressChecker = (value) => {
+	if (value.match(/^[0-9]{1,4}[ ,-][ A-Za-zÀ-ÿ0-9\-]+$/)) {
+		errorDisplay("address", "", true);
+		address = value;
+	} else {
+		errorDisplay(
+			"address",
+			"Veuillez saisir le numéro suivi du nom de la voie !"
+		);
+		address = null;
+	}
+};
+//check value city
+//play display error
+//keep value in variable
+//if error => prevent submit of form => variable = null
+const cityChecker = (value) => {
+	if (!value.match(/^[0-9]{5}[ ,-][ A-Za-zÀ-ÿ0-9\-]+$/)) {
+		errorDisplay(
+			"city",
+			"Veuillez saisir le code postal suivi du nom de la ville"
+		);
+		city = null;
+	} else {
+		errorDisplay("city", "", true);
+		city = value;
+	}
+};
+//check value for email
+// play display error
+//keep value in variable
+//if error => prevent submit of form => variable = null
+const emailChecker = (value) => {
+	if (!value.match(/^[\w\._-]+@[\w-]+\.[a-z]{2,4}$/i)) {
+		errorDisplay("email", "Votre adresse mail n'est pas valide");
+		email = null;
+	} else {
+		errorDisplay("email", "", true);
+		email = value;
+	}
+};
+// Submit order
+const submitOrder = () => {
+	// all values are true ? if yes,push on order when we submit form
+	form.addEventListener("submit", (e) => {
+		e.preventDefault();
+		if (firstName && lastName && email && address && city) {
+			productOrder = [];
+			for (product in productStorage) {
+				productOrder.push(productStorage[product].idProduct);
+			}
+			const order = {
+				contact: {
+					firstName: firstName,
+					lastName: lastName,
+					email: email,
+					address: address,
+					city: city,
+				},
+				products: productOrder,
+			};
+			// console.log(contact);
+
+			console.log(order);
+			const option = {
+				method: "POST",
+				headers: {
+					Accept: "application/json",
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(order),
+			};
+			// alert("Commande envoyée");
+			fetch(" http://localhost:3000/api/products/order", option)
+				.then((res) => res.json())
+				.then((res) => {
+					window.location = `../html/confirmation.html?id=${res.orderId}`;
+					localStorage.removeItem("product");
+					sumQuantity = 0;
+					localStorage.setItem("totalProduct", JSON.stringify(sumQuantity));
+				});
+		}
+	});
 };

@@ -16,6 +16,7 @@
 // //creation de la balise img
 // const image = document.createElement("img");
 // //ajout enfant à itemImg
+//------------------------------------------------
 itemImg.appendChild(image);
 // //balise title du head
 // const headTitle = document.querySelector("title");
