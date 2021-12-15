@@ -13,7 +13,7 @@ const cart__items = document.getElementById("cart__items");
 
 // function redirection to index.html if Cart shopping is empty
 redirect();
-//display quantity of product in li link "panier"
+//display quantity of product in li link "panier" (nav)
 displayTotalProductCart();
 // //display total quantity in span
 const totalQuantity = (document.getElementById("totalQuantity").textContent =
@@ -26,8 +26,6 @@ setTimeout(() => {
 }, 500);
 
 setTimeout(() => {
-	// console.log(productData);
-
 	totalPriceCalculation();
 
 	modifyQuantity();

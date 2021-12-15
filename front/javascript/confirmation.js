@@ -1,4 +1,6 @@
+//find id in url
 getId();
-const orderId = document.getElementById("orderId");
+
+//display id of order
 orderId.textContent = id;
-console.log(orderId);
+// console.log(orderId);

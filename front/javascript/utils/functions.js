@@ -7,8 +7,9 @@ const getProducts = () => {
 	fetch("http://localhost:3000/api/products")
 		.then((res) => res.json())
 		.then((res) => (productData = res))
-		// .then((res) => integrateElements())
-		.catch((err) => console.log("Node server est-il activé ?"));
+		.catch((err) => {
+			console.log(`Node server est-il activé ? ${err}`);
+		});
 
 	// console.log(productData);
 };
@@ -63,7 +64,15 @@ function integrateDataHtml() {
 			colorsProduct = data.colors;
 			displayColorsProduct();
 		})
-		.catch((err) => console.log(err));
+		.catch((err) => {
+			console.log(err);
+			alert(
+				"Nous n'avons pas pu charger les ressources, assurez-vous que Node server soit activé."
+			);
+			setInterval(() => {
+				location.reload();
+			}, 300);
+		});
 }
 // inject colors of product in HTML
 function displayColorsProduct() {
@@ -115,7 +124,7 @@ const displayProductStorage = () => {
 	for (product in productStorage) {
 		//keep quantity of each product in localstorage for make the sum of total quantity
 		quantityParsed.push(parseInt(productStorage[product].quantityNumber));
-		// console.log(quantityParsed);
+		console.log(quantityParsed);
 		//find index of productData array who have the same id in productStorage
 		indexFound = productData.findIndex(
 			(i) => productStorage[product].idProduct === i._id
@@ -207,8 +216,7 @@ const displayProductStorage = () => {
 //---------------------------------------------
 
 const totalPriceCalculation = () => {
-	// sumPerProduct = [];
-	if (dataPrice !== null) {
+	if (productStorage != null) {
 		sumPerProduct = [];
 		for (let i = 0; i < dataPrice.length; i++) {
 			//price*quantity
@@ -277,7 +285,7 @@ const modifyQuantity = () => {
 
 			productStorage[indexStorage].quantityNumber = e.target.value;
 			//--------------------------------------------------------------------------
-			//modify at index find the quanttity in quantityParsed
+			//modify at index find the quantity in quantityParsed
 			//--------------------------------------------------------------------------
 
 			quantityParsed.splice(
@@ -528,7 +536,10 @@ const submitOrder = () => {
 					localStorage.removeItem("product");
 					sumQuantity = 0;
 					localStorage.setItem("totalProduct", JSON.stringify(sumQuantity));
-				});
+				})
+				.catch((err) =>
+					alert("Votre commande n'a pu aboutir, veuillez réessayer plus tard")
+				);
 		}
 	});
 };

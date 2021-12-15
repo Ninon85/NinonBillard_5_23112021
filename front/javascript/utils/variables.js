@@ -56,3 +56,8 @@ const headTitle = document.querySelector("title");
 const liCart = document.querySelector(" nav > ul > a:nth-child(2) > li");
 //add child to li of panier
 liCart.appendChild(totalProduct);
+//--------------------------------------------
+//confirmation.js
+//--------------------------------------------
+//keep element for display id of order
+const orderId = document.getElementById("orderId");

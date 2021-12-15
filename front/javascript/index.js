@@ -11,5 +11,6 @@
 getProducts();
 setTimeout(() => {
 	integrateElements();
-}, 1500);
+}, 500);
+//display number of products in nav
 displayTotalProductCart();
