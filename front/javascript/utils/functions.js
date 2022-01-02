@@ -8,7 +8,28 @@ const getProducts = () => {
 		.then((res) => res.json())
 		.then((res) => (productData = res))
 		.catch((err) => {
-			console.log(`Node server est-il activé ? ${err}`);
+			if (
+				location.pathname === "/front/html/cart.html" &&
+				!err.ok &&
+				sumQuantity >= 1
+			) {
+				// console.log(`Le panier est soit vide soit node server est désactivé`);
+				alert("Node server n'est pas activé");
+				setInterval(() => {
+					location.reload();
+				}, 500);
+			} else if (
+				location.pathname === "/front/html/cart.html" &&
+				!err.ok &&
+				sumQuantity === 0
+			) {
+				console.log("Votre panier est vide");
+			} else {
+				alert(`Node server est-il activé ? ${err}`);
+				setInterval(() => {
+					location.reload();
+				}, 500);
+			}
 		});
 
 	// console.log(productData);
@@ -63,6 +84,14 @@ function integrateDataHtml() {
 			description.textContent = `${data.description}`;
 			colorsProduct = data.colors;
 			displayColorsProduct();
+			if (productStorage) {
+				for (product in productStorage) {
+					quantityParsed.push(parseInt(productStorage[product].quantityNumber));
+				}
+				makeSumQuantity(quantityParsed);
+			}
+			displayTotalProductCart();
+			// console.log(quantityParsed);
 		})
 		.catch((err) => {
 			console.log(err);
@@ -83,7 +112,7 @@ function displayColorsProduct() {
 		optionColor.textContent = colorsProduct[color];
 	}
 }
-//function to display total quantity of articles of the shopping cart
+//function to display total quantity of articles of the shopping cart (nav)
 function displayTotalProductCart() {
 	totalProduct.textContent = `: ${JSON.parse(
 		localStorage.getItem("totalProduct")
@@ -124,7 +153,7 @@ const displayProductStorage = () => {
 	for (product in productStorage) {
 		//keep quantity of each product in localstorage for make the sum of total quantity
 		quantityParsed.push(parseInt(productStorage[product].quantityNumber));
-		console.log(quantityParsed);
+		// console.log(quantityParsed);
 		//find index of productData array who have the same id in productStorage
 		indexFound = productData.findIndex(
 			(i) => productStorage[product].idProduct === i._id
@@ -362,7 +391,7 @@ const deleteProduct = () => {
 	// console.log(articles);
 	for (let i = 0; i < pDeleteItem.length; i++) {
 		pDeleteItem[i].addEventListener("click", () => {
-			console.log("c'est cliqué !!");
+			// console.log("c'est cliqué !!");
 			let articlesDatasetId = articles[i].dataset.id;
 			let articlesDatasetColor = articles[i].dataset.color;
 			indexToDeleteStorage = productStorage.findIndex(
@@ -382,10 +411,6 @@ const deleteProduct = () => {
 				productStorage.splice(indexToDeleteStorage, 1);
 				localStorage.setItem("product", JSON.stringify(productStorage));
 				//--------------------------------------------------------------------------
-				//refresh display total quantity in link li panier
-				//--------------------------------------------------------------------------
-				displayTotalProductCart();
-				//--------------------------------------------------------------------------
 				//delete at index found the quantity in quantityParsed
 				//--------------------------------------------------------------------------
 				quantityParsed.splice(indexToDeleteStorage, 1);
@@ -393,6 +418,10 @@ const deleteProduct = () => {
 				//refresh sum of quantity products
 				//--------------------------------------------------------------------------
 				makeSumQuantity(quantityParsed);
+				//--------------------------------------------------------------------------
+				//refresh display total quantity in link li panier
+				//--------------------------------------------------------------------------
+				displayTotalProductCart();
 			}
 		});
 	}
@@ -412,7 +441,6 @@ const errorDisplay = (tag, message, valid) => {
 };
 //function check value for first name
 const firstNameChecker = (value) => {
-	// match(/^[a-z]{3,20}$/i
 	if (value.length < 2 || value.length > 20) {
 		errorDisplay(
 			"firstName",
@@ -463,7 +491,7 @@ const addressChecker = (value) => {
 	} else {
 		errorDisplay(
 			"address",
-			"Veuillez saisir le numéro suivi du nom de la voie !"
+			"Veuillez saisir le numéro suivi du nom de la voie, sans caractères spéciaux."
 		);
 		address = null;
 	}

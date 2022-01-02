@@ -1,43 +1,11 @@
-// // id of URL
-// var id;
-// //noeud pour insertion balise img
-// const itemImg = document.querySelector("div.item__img");
-// //noeud nom du produit
-// const titleh1 = document.getElementById("title");
-// //noeud prix
-// const price = document.getElementById("price");
-// //noeud description
-// const description = document.getElementById("description");
-// // noeud select color
-// const selectColors = document.getElementById("colors");
-// //input quantity
-// const quantity = document.getElementById("quantity");
-
-// //creation de la balise img
-// const image = document.createElement("img");
 // //ajout enfant à itemImg
 //------------------------------------------------
 itemImg.appendChild(image);
-// //balise title du head
-// const headTitle = document.querySelector("title");
-// //li panier
-// const liCart = document.querySelector(" nav > ul > a:nth-child(2) > li");
-// //array who contain each quantity of each product choiced
-// let quantityParsed = [];
-// //create a span in li  of panier to display total number of products
-// const totalProduct = document.createElement("span");
-// totalProduct.style.color = "#3498DB";
-// totalProduct.style.marginLeft = "2px";
-// //add child to li of panier
-// liCart.appendChild(totalProduct);
-// //number total of products
-// let sumQuantity;
-// itemImg.appendChild(image);
-// // //get product in local storage
-// let productStorage = JSON.parse(localStorage.getItem("product"));
+
 getId();
 integrateDataHtml();
-displayTotalProductCart();
+
+// displayTotalProductCart();
 
 //listen events of the button to add to the cart
 addToCart.addEventListener("click", () => {
@@ -46,6 +14,7 @@ addToCart.addEventListener("click", () => {
 		color: selectColors.value,
 		quantityNumber: quantity.value,
 	};
+
 	if (selectColors.value === "") {
 		alert("Veuillez selectionner une couleur");
 	} else if (recapChoice.quantityNumber === "0") {
@@ -54,6 +23,8 @@ addToCart.addEventListener("click", () => {
 	} else if (recapChoice.quantityNumber > 100) {
 		alert("Vous ne pouvez pas commander plus de 100 articles");
 	} else if (productStorage) {
+		// console.log(productStorage);
+
 		//find index where id and color are the same than in recapChoice
 		let findIndex = productStorage.findIndex(
 			(i) =>
@@ -72,21 +43,38 @@ addToCart.addEventListener("click", () => {
 				productStorage[findIndex].quantityNumber + recapChoice.quantityNumber;
 			// convert product storage into string with key "product"
 			localStorage.setItem("product", JSON.stringify(productStorage));
-			// console.log("id et couleur identiques");
-
-			//if no math for id and color
+			//Replace quantity value at index found for make the sum of products
+			quantityParsed[findIndex] = parseInt(
+				productStorage[findIndex].quantityNumber
+			);
+			makeSumQuantity(quantityParsed);
+			displayTotalProductCart();
+			// if quantity for a product = 100, replace quantity value at index found by 100
+			if (findIndex !== -1 && productStorage[findIndex].quantityNumber >= 100) {
+				alert("Vous avez atteint la quantité maximale de 100 pour cet article");
+				productStorage[findIndex].quantityNumber = 100;
+				localStorage.setItem("product", JSON.stringify(productStorage));
+				quantityParsed[findIndex] = parseInt(
+					productStorage[findIndex].quantityNumber
+				);
+				makeSumQuantity(quantityParsed);
+				displayTotalProductCart();
+			}
 		} else {
+			//if no match for id and color
 			addToLocalStorage(recapChoice);
+			quantityParsed.push(parseInt(quantity.value));
+			makeSumQuantity(quantityParsed);
+			displayTotalProductCart();
 		}
 		//if productStorage is empty, convert into an array
 	} else if (productStorage === null) {
 		productStorage = [];
 		addToLocalStorage(recapChoice);
+		quantityParsed.push(parseInt(productStorage[0].quantityNumber));
+		makeSumQuantity(quantityParsed);
+		displayTotalProductCart();
 	}
-	sumQuantity += parseInt(recapChoice.quantityNumber);
-	// console.log(sumQuantity);
-	localStorage.setItem("totalProduct", JSON.stringify(sumQuantity));
-	displayTotalProductCart();
 });
 // localStorage.clear();
 // console.log(productStorage);
