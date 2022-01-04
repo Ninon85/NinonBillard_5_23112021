@@ -1,9 +1,6 @@
-//Implémentation des produits sur la page index
+//Integrate products on page index
 // call functions
-
+//function get data from API
 getProducts();
-setTimeout(() => {
-	integrateElements();
-}, 500);
 //display number of products in nav
 displayTotalProductCart();

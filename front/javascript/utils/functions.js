@@ -1,35 +1,22 @@
 //------------------------------------------------------------------
+//------------------------------------------------------------------
 //index.js
 //------------------------------------------------------------------
+//------------------------------------------------------------------
 
-//fonction pour recuperer les données de l'api
+//function get data from API
 const getProducts = () => {
 	fetch("http://localhost:3000/api/products")
 		.then((res) => res.json())
-		.then((res) => (productData = res))
+		.then((res) => {
+			productData = res;
+			integrateElements();
+		})
 		.catch((err) => {
-			if (
-				location.pathname === "/front/html/cart.html" &&
-				!err.ok &&
-				sumQuantity >= 1
-			) {
-				// console.log(`Le panier est soit vide soit node server est désactivé`);
-				alert("Node server n'est pas activé");
-				setInterval(() => {
-					location.reload();
-				}, 500);
-			} else if (
-				location.pathname === "/front/html/cart.html" &&
-				!err.ok &&
-				sumQuantity === 0
-			) {
-				console.log("Votre panier est vide");
-			} else {
-				alert(`Node server est-il activé ? ${err}`);
-				setInterval(() => {
-					location.reload();
-				}, 500);
-			}
+			alert(`Node server est-il activé ? ${err}`);
+			setInterval(() => {
+				location.reload();
+			}, 500);
 		});
 
 	// console.log(productData);
@@ -61,7 +48,9 @@ const integrateElements = () => {
 	}
 };
 //------------------------------------------------------------------
+//------------------------------------------------------------------
 //PRODUCT.JS
+//------------------------------------------------------------------
 //------------------------------------------------------------------
 
 //FUNCTION TO GET ID
@@ -113,7 +102,7 @@ function displayColorsProduct() {
 	}
 }
 //function to display total quantity of articles of the shopping cart (nav)
-function displayTotalProductCart() {
+function displayTotalProductCart(element) {
 	totalProduct.textContent = `: ${JSON.parse(
 		localStorage.getItem("totalProduct")
 	)} article(s)`;
@@ -127,10 +116,87 @@ const addToLocalStorage = (object) => {
 	productStorage.push(object);
 	localStorage.setItem("product", JSON.stringify(productStorage));
 };
+//listen events on button to add product in basket
+const addToBasket = () => {
+	addToCart.addEventListener("click", () => {
+		let recapChoice = {
+			idProduct: id,
+			color: selectColors.value,
+			quantityNumber: quantity.value,
+		};
 
+		if (selectColors.value === "") {
+			alert("Veuillez selectionner une couleur");
+		} else if (recapChoice.quantityNumber < 1) {
+			alert("Veuillez choisir une quantité");
+		} else if (recapChoice.quantityNumber > 100) {
+			alert("Vous ne pouvez pas commander plus de 100 articles");
+			//if productstorage is not empty
+		} else if (productStorage) {
+			// console.log(productStorage);
+
+			//find index where id and color are the same than in recapChoice
+			let findIndex = productStorage.findIndex(
+				(i) =>
+					recapChoice.color === i.color && recapChoice.idProduct === i.idProduct
+			);
+			//if color and id match
+			if (findIndex !== -1) {
+				//parse into number quantity at found index of productStorage
+				productStorage[findIndex].quantityNumber = parseInt(
+					productStorage[findIndex].quantityNumber
+				);
+				// parse into number quantity in recapChoice
+				recapChoice.quantityNumber = parseInt(recapChoice.quantityNumber);
+				//make the sum of quantity and keep the value at found index of productStorage
+				productStorage[findIndex].quantityNumber =
+					productStorage[findIndex].quantityNumber + recapChoice.quantityNumber;
+				// convert product storage into string with key "product"
+				localStorage.setItem("product", JSON.stringify(productStorage));
+				//Replace quantity value at index found for make the sum of products
+				quantityParsed[findIndex] = parseInt(
+					productStorage[findIndex].quantityNumber
+				);
+				makeSumQuantity(quantityParsed);
+				displayTotalProductCart();
+				// if quantity for a product = 100, replace quantity value at index found by 100
+				if (
+					findIndex !== -1 &&
+					productStorage[findIndex].quantityNumber >= 100
+				) {
+					alert(
+						"Vous avez atteint la quantité maximale de 100 pour cet article"
+					);
+					productStorage[findIndex].quantityNumber = 100;
+					localStorage.setItem("product", JSON.stringify(productStorage));
+					quantityParsed[findIndex] = parseInt(
+						productStorage[findIndex].quantityNumber
+					);
+					makeSumQuantity(quantityParsed);
+					displayTotalProductCart();
+				}
+			} else {
+				//if no match for id and color
+				addToLocalStorage(recapChoice);
+				quantityParsed.push(parseInt(quantity.value));
+				makeSumQuantity(quantityParsed);
+				displayTotalProductCart();
+			}
+			//if productStorage is empty, convert into an array
+		} else if (productStorage === null) {
+			productStorage = [];
+			addToLocalStorage(recapChoice);
+			quantityParsed.push(parseInt(productStorage[0].quantityNumber));
+			makeSumQuantity(quantityParsed);
+			displayTotalProductCart();
+		}
+	});
+};
+//------------------------------------------------------------------
 //----------------------------------------------------------------------------------
 //cart.js
 //----------------------------------------------------------------------------------
+//------------------------------------------------------------------
 
 //---------------------------------------------
 // function redirection to index html if Cart shopping is empty
@@ -144,6 +210,40 @@ const redirect = () => {
 		location.href = "index.html";
 	}
 };
+//---------------------------------------------
+//get data from API and keep data in array "productData"
+//---------------------------------------------
+const getData = () => {
+	fetch("http://localhost:3000/api/products")
+		.then((res) => res.json())
+		.then((res) => (productData = res))
+		.then((res) => {
+			displayProductStorage();
+			totalPriceCalculation();
+
+			modifyQuantity();
+
+			deleteProduct();
+		})
+		.catch((err) => {
+			if (!err.ok && sumQuantity >= 1) {
+				alert("Node server n'est pas activé");
+				setInterval(() => {
+					location.reload();
+				}, 500);
+			} else {
+				console.log(err);
+			}
+		});
+};
+//---------------------------------------------
+// display total quantity between total price
+//---------------------------------------------
+
+function displayTotalQtt(element) {
+	element.textContent = JSON.parse(localStorage.getItem("totalProduct"));
+}
+
 //---------------------------------------------
 //display elements of localstorage
 //create elements html for each product in localstorage
@@ -293,10 +393,9 @@ const modifyQuantity = () => {
 	for (let i = 0; i < inputQuantity.length; i++) {
 		inputQuantity[i].addEventListener("change", (e) => {
 			// console.log(e.target.value);
-
+			const totalQuantity = document.getElementById("totalQuantity");
 			let articlesDatasetId = articles[i].dataset.id;
 			let articlesDatasetColor = articles[i].dataset.color;
-			let pQuantityTextContent = pQuantity[i].textContent;
 			// console.log(articlesDatasetColor);
 			// console.log(articlesDatasetId);
 			// console.log(pQuantityTextContent);
@@ -337,11 +436,9 @@ const modifyQuantity = () => {
 			//refresh display total quantity in span
 			//--------------------------------------------------------------------------
 
-			const totalQuantity = (document.getElementById(
-				"totalQuantity"
-			).textContent = JSON.parse(localStorage.getItem("totalProduct")));
+			displayTotalQtt(totalQuantity);
 			//--------------------------------------------------------------------------
-			//refresh display total quantity in link li panier
+			//refresh display total quantity in link li panier(nav)
 			//--------------------------------------------------------------------------
 			displayTotalProductCart();
 			//--------------------------------------------------------------------------
@@ -369,6 +466,64 @@ const modifyQuantity = () => {
 				//refresh total quantity
 				//--------------------------------------------------------------------------
 				makeSumQuantity(quantityParsed);
+				//--------------------------------------------------------------------------
+				//refresh display total quantity in span
+				//--------------------------------------------------------------------------
+
+				displayTotalQtt(totalQuantity);
+				//--------------------------------------------------------------------------
+				//refresh display total quantity in link li panier
+				//--------------------------------------------------------------------------
+				displayTotalProductCart();
+				//--------------------------------------------------------------------------
+				//refresh total price
+				//--------------------------------------------------------------------------
+
+				totalPriceCalculation();
+			} else if (productStorage[indexStorage].quantityNumber < 1) {
+				alert(
+					'Vous ne pouvez pas saisir une quantité inférieur à 1, pour supprimer un article de votre panier, cliquez sur "Supprimer"'
+				);
+				//--------------------------------------------------------------------------
+				//replace value at found index at 1
+				//--------------------------------------------------------------------------
+				productStorage[indexStorage].quantityNumber = 1;
+				//--------------------------------------------------------------------------
+				//push array in localStorage
+				//--------------------------------------------------------------------------
+				localStorage.setItem("product", JSON.stringify(productStorage));
+				//--------------------------------------------------------------------------
+				//value of input at 1
+				//--------------------------------------------------------------------------
+				inputQuantity[indexStorage].value = 1;
+				//--------------------------------------------------------------------------
+				//refresh display of pQuantity textContent
+				//--------------------------------------------------------------------------
+				pQuantity[
+					indexStorage
+				].textContent = `Qté : ${productStorage[indexStorage].quantityNumber}`;
+				//--------------------------------------------------------------------------
+				// correct value in the array for make the total of quantity
+				//--------------------------------------------------------------------------
+
+				quantityParsed.splice(indexStorage, 1, 1);
+				//--------------------------------------------------------------------------
+				//refresh total quantity
+				//--------------------------------------------------------------------------
+				makeSumQuantity(quantityParsed);
+				//--------------------------------------------------------------------------
+				//refresh display total quantity in span
+				//--------------------------------------------------------------------------
+				displayTotalQtt(totalQuantity);
+				//--------------------------------------------------------------------------
+				//refresh display total quantity in link li panier
+				//--------------------------------------------------------------------------
+				displayTotalProductCart();
+				//--------------------------------------------------------------------------
+				//refresh total price
+				//--------------------------------------------------------------------------
+
+				totalPriceCalculation();
 			} else {
 				//--------------------------------------------------------------------------
 				// push productStorage refreshed in localStorage
@@ -426,9 +581,12 @@ const deleteProduct = () => {
 		});
 	}
 };
+
+//------------------------------------------------------------------
 //-----------------------------------------------------
 //Form
 //-----------------------------------------------------
+//------------------------------------------------------------------
 
 //Function for display an error message
 const errorDisplay = (tag, message, valid) => {
@@ -525,7 +683,9 @@ const emailChecker = (value) => {
 		email = value;
 	}
 };
+//---------------------------------------------
 // Submit order
+//---------------------------------------------
 const submitOrder = () => {
 	// all values are true ? if yes,push on order when we submit form
 	form.addEventListener("submit", (e) => {

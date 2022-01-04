@@ -1,6 +1,8 @@
-//----------------------------------------
+//------------------------------------------------------------------
+//------------------------------------------------------------------
 //index
-//----------------------------------------
+//------------------------------------------------------------------
+//------------------------------------------------------------------
 //récupération du noeud item pour implémentation des produits sur la page d'accueil
 const item = document.getElementById("items");
 // console.log(item);
@@ -12,15 +14,19 @@ totalProduct.style.marginLeft = "2px";
 let productStorage = JSON.parse(localStorage.getItem("product"));
 //stockage des données products de l'api
 let productData = [];
-//--------------------------------------------
+//------------------------------------------------------------------
+//------------------------------------------------------------------
 //product.js
-//--------------------------------------------
+//------------------------------------------------------------------
+//------------------------------------------------------------------
 //number total of products
 let sumQuantity = JSON.parse(localStorage.getItem("totalProduct"));
 //array who contain each quantity of each product choiced
 let quantityParsed = [];
 //------------------------------------------------------------------
+//------------------------------------------------------------------
 //cart.js
+//------------------------------------------------------------------
 //------------------------------------------------------------------
 //array for price per product
 let dataPrice = [];
@@ -28,10 +34,25 @@ let dataPrice = [];
 let totalPrice;
 //keep element of Dom where total price is display
 const totalPriceEl = document.getElementById("totalPrice");
-
-//--------------------------------------------
+//keep span for display total qtt between total price
+const totalQuantity = document.getElementById("totalQuantity");
+//get all inputs of form
+const inputs = document.querySelectorAll(
+	'input[type="text"],input[type="email"]'
+);
+// console.log(inputs);
+//get form for submit
+const form = document.querySelector(".cart__order__form");
+//variable for keep value of inputs
+let firstName, lastName, address, city, email;
+//get element cart__items
+const cart__items = document.getElementById("cart__items");
+// console.log(cart__items);
+//------------------------------------------------------------------
+//------------------------------------------------------------------
 //product.js
-//--------------------------------------------
+//------------------------------------------------------------------
+//------------------------------------------------------------------
 // id of URL
 var id;
 //noeud pour insertion balise img
@@ -56,8 +77,10 @@ const headTitle = document.querySelector("title");
 const liCart = document.querySelector(" nav > ul > a:nth-child(2) > li");
 //add child to li of panier
 liCart.appendChild(totalProduct);
-//--------------------------------------------
+//------------------------------------------------------------------
+//------------------------------------------------------------------
 //confirmation.js
-//--------------------------------------------
+//------------------------------------------------------------------
+//------------------------------------------------------------------
 //keep element for display id of order
 const orderId = document.getElementById("orderId");
